@@ -1,0 +1,59 @@
+version: '3'
+services:
+
+  enterdata:
+    container_name: enterdata
+    build: ./enter_data
+    ports:
+      - "1207:1207"
+    depends_on:
+      - mysqldb
+      - mongodb
+      - authentication
+
+  authentication:
+    container_name: authentication
+    build: ./authentication
+    ports:
+      - "1208:1208"
+    depends_on:
+      - mysqldb
+      - mongodb
+
+  mysqldb:
+    container_name: mysqldb
+    image: mysql:8.0
+    restart: unless-stopped
+    volumes:
+      - ./MySQL_db/db:/var/lib/mysql
+    environment:
+      - MYSQL_HOST=localhost
+      - MYSQL_PASSWORD=123456
+      - MYSQL_ROOT_PASSWORD=root
+
+  showresults:
+    container_name: showresults
+    build: ./show_results
+    ports:
+      - "1209:1209"
+    depends_on:
+      - mysqldb
+      - mongodb
+      - authentication
+
+  analytics:
+    container_name: analytics
+    build: ./analytics
+    ports:
+      - "1210:1210"
+    depends_on:
+      - mysqldb
+      - mongodb
+
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+
